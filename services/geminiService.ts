@@ -2,14 +2,15 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { TacticalAdvice, WeatherData } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getFishingAdvice = async (
   weather: WeatherData,
   waterType: string,
   targetSeason: string,
   imageContent?: string // base64
 ): Promise<TacticalAdvice> => {
+  // Initialize client here to prevent crash on module import if process is undefined
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
   const textPart = {
     text: `
       Handle a request for a modern carp fishing tactical advice.
@@ -68,6 +69,7 @@ export const getFishingAdvice = async (
 };
 
 export const getLocalInfo = async (location: string) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Finde aktuelle Informationen, Angelregeln oder Besonderheiten für das Karpfenangeln in der Region ${location}. Nutze die Google Suche.`,
