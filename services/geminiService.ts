@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { TacticalAdvice, WeatherData } from "../types";
 
@@ -8,12 +7,11 @@ export const getFishingAdvice = async (
   targetSeason: string,
   imageContent?: string // base64
 ): Promise<TacticalAdvice> => {
-  // Safe access to API Key
-  const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
+  
+  const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    // Return dummy data or throw a clear error if key is missing
-    console.warn("API Key missing. Using fallback/mock mode or failing.");
+    console.warn("API Key missing.");
     throw new Error("API Key is missing. Please configure process.env.API_KEY.");
   }
 
@@ -77,7 +75,7 @@ export const getFishingAdvice = async (
 };
 
 export const getLocalInfo = async (location: string) => {
-  const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
+  const apiKey = process.env.API_KEY;
   if (!apiKey) return "API Key missing.";
 
   const ai = new GoogleGenAI({ apiKey });

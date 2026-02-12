@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <base href="./">
     <title>CarpLogic AI - Modern Carp Fishing Advisor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,65 +19,30 @@
             width: 100vw;
             min-height: 100vh;
         }
-        #error-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            color: #ef4444;
-            padding: 2rem;
-            z-index: 9999;
-            overflow: auto;
-            font-family: monospace;
-        }
     </style>
     <script>
-      // Polyfill für process.env, damit die App nicht abstürzt
-      window.process = {
-        env: {
-          NODE_ENV: 'production',
-          API_KEY: '' // Der Key muss über Build-Tools oder manuell gesetzt werden, verhindert aber hier den Crash.
-        }
-      };
-
-      // Globaler Error Handler um "Black Screen" Ursachen anzuzeigen
-      window.addEventListener('error', function(e) {
-        const overlay = document.getElementById('error-overlay');
-        if(overlay) {
-            overlay.style.display = 'block';
-            overlay.innerHTML += '<div><strong>Error:</strong> ' + e.message + '</div><br/>';
-            console.error(e);
-        }
-      });
-      window.addEventListener('unhandledrejection', function(e) {
-        const overlay = document.getElementById('error-overlay');
-        if(overlay) {
-            overlay.style.display = 'block';
-            overlay.innerHTML += '<div><strong>Promise Rejection:</strong> ' + e.reason + '</div><br/>';
-        }
-      });
+      // Robust Polyfill for process.env
+      window.process = window.process || {};
+      window.process.env = window.process.env || {};
+      window.process.env.NODE_ENV = window.process.env.NODE_ENV || 'production';
+      // Fallback for API Key if not injected by build
+      window.process.env.API_KEY = window.process.env.API_KEY || ''; 
     </script>
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
     "recharts": "https://esm.sh/recharts@^3.7.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
-    <div id="error-overlay">
-        <h2 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Startup Error</h2>
-    </div>
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>
