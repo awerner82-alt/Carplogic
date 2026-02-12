@@ -4,6 +4,7 @@ import { NavigationTab, WeatherData } from './types';
 import Dashboard from './components/Dashboard';
 import TacticalAdvisor from './components/TacticalAdvisor';
 import CatchLog from './components/CatchLog';
+import SettingsModal from './components/SettingsModal';
 import { LayoutDashboard, Brain, BookOpen, Settings, Loader2 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -13,6 +14,10 @@ const App: React.FC = () => {
   const [locationName, setLocationName] = useState<string>('Standort...');
   const [citySearch, setCitySearch] = useState<string>('');
   
+  // Settings State
+  const [showSettings, setShowSettings] = useState(false);
+  const [userName, setUserName] = useState<string>('Angler');
+
   const [weather, setWeather] = useState<WeatherData>({
     temp: 0,
     apparentTemp: 0,
@@ -201,7 +206,7 @@ const App: React.FC = () => {
       );
     }
     switch (activeTab) {
-      case NavigationTab.DASHBOARD: return <Dashboard weather={weather} pressureTrend={pressureTrend} tempTrend={tempTrend} locationName={locationName} onSearch={(e) => { e.preventDefault(); fetchWeatherData(48.1, 11.6, citySearch); }} citySearch={citySearch} setCitySearch={setCitySearch} />;
+      case NavigationTab.DASHBOARD: return <Dashboard weather={weather} pressureTrend={pressureTrend} tempTrend={tempTrend} locationName={locationName} onSearch={(e) => { e.preventDefault(); fetchWeatherData(48.1, 11.6, citySearch); }} citySearch={citySearch} setCitySearch={setCitySearch} userName={userName} />;
       case NavigationTab.ADVISOR: return <TacticalAdvisor weather={weather} />;
       case NavigationTab.LOGBOOK: return <CatchLog />;
       default: return null;
@@ -216,7 +221,10 @@ const App: React.FC = () => {
           <h1 className="text-2xl font-black tracking-tighter text-white">CarpLogic<span className="text-blue-500">AI</span></h1>
           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">High-Res Carp Intelligence</p>
         </div>
-        <button className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center border border-slate-800 active:scale-95 transition-transform">
+        <button 
+          onClick={() => setShowSettings(true)}
+          className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center border border-slate-800 active:scale-95 transition-transform hover:bg-slate-800"
+        >
           <Settings size={20} className="text-slate-400" />
         </button>
       </header>
@@ -245,6 +253,14 @@ const App: React.FC = () => {
       </nav>
       {/* Bottom Padding for Floating Nav */}
       <div className="h-28"></div>
+      
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+        userName={userName}
+        setUserName={setUserName}
+      />
     </div>
   );
 };

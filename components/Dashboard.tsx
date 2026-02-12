@@ -12,6 +12,7 @@ interface DashboardProps {
   citySearch: string;
   setCitySearch: (val: string) => void;
   onSearch: (e: React.FormEvent) => void;
+  userName: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ 
@@ -21,7 +22,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   locationName, 
   citySearch, 
   setCitySearch, 
-  onSearch 
+  onSearch,
+  userName
 }) => {
   const [graphMode, setGraphMode] = useState<'pressure' | 'temp'>('pressure');
   
@@ -62,6 +64,13 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="flex flex-col gap-4 pb-12">
+      
+      {/* Greeting Header */}
+      <div className="px-1">
+        <h2 className="text-xl font-black text-white tracking-tight">Moin, {userName}.</h2>
+        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Bereit für die nächste Session?</p>
+      </div>
+
       {/* Search Bar */}
       <div className="bg-slate-900/40 backdrop-blur-md p-3 rounded-2xl border border-slate-800 shadow-lg">
         <form onSubmit={onSearch} className="relative">
