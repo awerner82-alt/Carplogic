@@ -4,26 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <base href="./">
     <title>CarpLogic AI - Modern Carp Fishing Advisor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000; /* Reines Schwarz für AMOLED */
+            background-color: #000000;
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Verhindert horizontales Scrollen durch die Curved Edges des Redmi */
         #root {
             overflow-x: hidden;
             width: 100vw;
+            min-height: 100vh;
         }
-        /* Smooth Scrolling für 120Hz Displays */
-        * {
-            scroll-behavior: smooth;
+        #error-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: #ef4444;
+            padding: 2rem;
+            z-index: 9999;
+            overflow: auto;
+            font-family: monospace;
         }
     </style>
+    <script>
+      // Polyfill für process.env, damit die App nicht abstürzt
+      window.process = {
+        env: {
+          NODE_ENV: 'production',
+          API_KEY: '' // Der Key muss über Build-Tools oder manuell gesetzt werden, verhindert aber hier den Crash.
+        }
+      };
+
+      // Globaler Error Handler um "Black Screen" Ursachen anzuzeigen
+      window.addEventListener('error', function(e) {
+        const overlay = document.getElementById('error-overlay');
+        if(overlay) {
+            overlay.style.display = 'block';
+            overlay.innerHTML += '<div><strong>Error:</strong> ' + e.message + '</div><br/>';
+            console.error(e);
+        }
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        const overlay = document.getElementById('error-overlay');
+        if(overlay) {
+            overlay.style.display = 'block';
+            overlay.innerHTML += '<div><strong>Promise Rejection:</strong> ' + e.reason + '</div><br/>';
+        }
+      });
+    </script>
 <script type="importmap">
 {
   "imports": {
@@ -39,6 +76,9 @@
 </head>
 <body>
     <div id="root"></div>
+    <div id="error-overlay">
+        <h2 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Startup Error</h2>
+    </div>
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>

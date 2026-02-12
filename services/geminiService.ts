@@ -8,8 +8,16 @@ export const getFishingAdvice = async (
   targetSeason: string,
   imageContent?: string // base64
 ): Promise<TacticalAdvice> => {
-  // Initialize client here to prevent crash on module import if process is undefined
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Safe access to API Key
+  const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
+  
+  if (!apiKey) {
+    // Return dummy data or throw a clear error if key is missing
+    console.warn("API Key missing. Using fallback/mock mode or failing.");
+    throw new Error("API Key is missing. Please configure process.env.API_KEY.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const textPart = {
     text: `
@@ -69,7 +77,10 @@ export const getFishingAdvice = async (
 };
 
 export const getLocalInfo = async (location: string) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
+  if (!apiKey) return "API Key missing.";
+
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: `Finde aktuelle Informationen, Angelregeln oder Besonderheiten für das Karpfenangeln in der Region ${location}. Nutze die Google Suche.`,
