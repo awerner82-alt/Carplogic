@@ -1,0 +1,8 @@
+{
+  "name": "CarpLogic AI",
+  "description": "An intelligent strategist for modern carp anglers. Analyze weather, pressure, and moon phases to get AI-powered tactical advice on rigs, baits, and spot selection.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
