@@ -8,11 +8,12 @@ export const getFishingAdvice = async (
   imageContent?: string // base64
 ): Promise<TacticalAdvice> => {
   
+  // Use process.env.API_KEY directly as per @google/genai guidelines.
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
     console.warn("API Key missing.");
-    throw new Error("API Key is missing. Please configure process.env.API_KEY.");
+    throw new Error("API Key fehlt. Bitte Umgebungsvariable API_KEY setzen.");
   }
 
   const ai = new GoogleGenAI({ apiKey });

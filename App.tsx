@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { NavigationTab, WeatherData } from './types';
 import Dashboard from './components/Dashboard';
@@ -14,10 +13,10 @@ const App: React.FC = () => {
   const [locationName, setLocationName] = useState<string>('Standort...');
   const [citySearch, setCitySearch] = useState<string>('');
   
-  // Settings State
+  // Settings & Auth State
   const [showSettings, setShowSettings] = useState(false);
   const [userName, setUserName] = useState<string>('Angler');
-
+  
   const [weather, setWeather] = useState<WeatherData>({
     temp: 0,
     apparentTemp: 0,
@@ -234,11 +233,12 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    // If we have an API key (process.env.API_KEY), we can proceed with other inits if needed
+    // But weather fetching is independent of Google API key
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeatherData(pos.coords.latitude, pos.coords.longitude),
         () => {
-            // Geolocation denied or failed -> Fallback to Munich with Demo capability
             fetchWeatherData(48.1, 11.6, "München (Fallback)");
         }
       );

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, Save, User, Info } from 'lucide-react';
 
@@ -61,7 +60,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, userName
             <div className="bg-black p-4 rounded-2xl border border-slate-800 space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-xs text-slate-300">Version</span>
-                <span className="text-xs font-mono text-slate-500">1.0.2 (Beta)</span>
+                <span className="text-xs font-mono text-slate-500">1.0.3 (Beta)</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-slate-300">Engine</span>
