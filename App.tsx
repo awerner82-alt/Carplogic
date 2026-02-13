@@ -5,7 +5,7 @@ import Dashboard from './components/Dashboard';
 import TacticalAdvisor from './components/TacticalAdvisor';
 import CatchLog from './components/CatchLog';
 import SettingsModal from './components/SettingsModal';
-import { LayoutDashboard, Brain, BookOpen, Settings, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Brain, BookOpen, Settings, Loader2, WifiOff } from 'lucide-react';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavigationTab>(NavigationTab.DASHBOARD);
@@ -84,6 +84,48 @@ const App: React.FC = () => {
     return directions[Math.round(degree / 45) % 8];
   };
 
+  // Demo Data Fallback to ensure UI is visible even if API fails
+  const setDemoData = (name: string) => {
+    const { phaseName, illumination } = calculateMoonPhase(new Date());
+    setWeather({
+      temp: 18,
+      apparentTemp: 20,
+      pressure: 1014,
+      windSpeed: 12,
+      windGusts: 25,
+      windDirection: 220,
+      windDirectionStr: 'SW',
+      condition: 'Bewölkt (Demo)',
+      humidity: 75,
+      precipProb: 30,
+      cloudCover: 60,
+      moonPhase: phaseName,
+      moonIllumination: illumination,
+      sunrise: '06:15',
+      sunset: '20:45',
+      next2hRain: 10,
+      next2hRainAmount: 0.0,
+      next2hWind: 15
+    });
+    
+    // Create dummy trend data
+    const now = new Date();
+    const pTrend = [];
+    const tTrend = [];
+    for (let i = -12; i < 24; i++) {
+        const d = new Date(now.getTime() + i * 3600 * 1000);
+        const timeStr = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        const isFuture = i > 0;
+        const isNow = i === 0;
+        pTrend.push({ time: timeStr, value: 1012 + Math.sin(i/5) * 4, isFuture, isNow });
+        tTrend.push({ time: timeStr, value: 15 + Math.cos(i/8) * 5, isFuture, isNow });
+    }
+    setPressureTrend(pTrend);
+    setTempTrend(tTrend);
+    setLocationName(name + " (Demo-Modus)");
+    setLoading(false);
+  };
+
   const fetchWeatherData = async (lat: number, lon: number, name?: string) => {
     try {
       setLoading(true);
@@ -92,6 +134,11 @@ const App: React.FC = () => {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation_probability,cloud_cover&hourly=temperature_2m,pressure_msl,precipitation_probability,precipitation,wind_speed_10m&daily=sunrise,sunset&past_days=1&forecast_days=2&timezone=auto`;
       
       const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error("Wetterdienst nicht erreichbar");
+      }
+
       const data = await response.json();
 
       if (data.current) {
@@ -180,8 +227,9 @@ const App: React.FC = () => {
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setError("Wetterdaten nicht verfügbar");
-      setLoading(false);
+      setError("Wetterdienst Fehler - Nutze Offline-Daten");
+      // Activate Demo Mode on Error
+      setDemoData(name || "Standort");
     }
   };
 
@@ -189,10 +237,13 @@ const App: React.FC = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeatherData(pos.coords.latitude, pos.coords.longitude),
-        () => fetchWeatherData(48.1, 11.6, "München")
+        () => {
+            // Geolocation denied or failed -> Fallback to Munich with Demo capability
+            fetchWeatherData(48.1, 11.6, "München (Fallback)");
+        }
       );
     } else {
-      fetchWeatherData(48.1, 11.6, "München");
+      fetchWeatherData(48.1, 11.6, "München (Fallback)");
     }
   }, []);
 
@@ -230,7 +281,11 @@ const App: React.FC = () => {
       </header>
 
       <main className="flex-1 px-5 overflow-y-auto scrollbar-hide">
-        {error && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-500 text-[10px] font-bold text-center uppercase tracking-widest">{error}</div>}
+        {error && (
+            <div className="mb-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-indigo-400 text-[10px] font-bold text-center uppercase tracking-widest flex items-center justify-center gap-2">
+                <WifiOff size={12} /> {error}
+            </div>
+        )}
         {renderContent()}
       </main>
 

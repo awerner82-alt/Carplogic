@@ -1,5 +1,5 @@
-import React, { Component, ReactNode } from 'react';
-import ReactDOM from 'react-dom/client';
+import React, { ReactNode } from 'react';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 
 interface ErrorBoundaryProps {
@@ -12,7 +12,7 @@ interface ErrorBoundaryState {
 }
 
 // Error Boundary Component
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -47,7 +47,7 @@ if (!rootElement) {
   throw new Error("Could not find root element to mount to");
 }
 
-const root = ReactDOM.createRoot(rootElement);
+const root = createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <ErrorBoundary>
